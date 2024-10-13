@@ -20,6 +20,15 @@ type ShipmentDetails record {
     string shipment_type;  // standard, express, international
 };
 
+type ShipmentResponse record {
+    string request_id;
+    string pickup_time;
+    string delivery_time;
+    string tracking_number;
+    string status;
+    string message;
+};
+
 kafka:ProducerConfiguration producerConfiguration = {
     clientId: "basic-producer",
     acks: "all",
@@ -60,4 +69,19 @@ public function main() returns error? {
 
     checkpanic sendShipmentRequestToKafka(testRequest);
 
+}
+
+kafka:ConsumerConfiguration responseConsumer = {
+    groupId: "response-consumer",
+    topics: ["standard_delivery_responses", "express_delivery_responses", "international_delivery_responses"]
+};
+service on new kafka:Listener(kafka:DEFAULT_URL, responseConsumer) {
+    remote function onConsumerRecord(kafka:BytesConsumerRecord[] records) returns error? {
+        foreach var consumerRecord in records {
+            byte[] messageContent = consumerRecord.value;
+            string messageStr = check string:fromBytes(messageContent);
+            ShipmentResponse shipmentResponse = check messageStr.fromJsonStringWithType();
+            log:printInfo("Received shipment response: " + shipmentResponse.toString());
+        }
+    }
 }
