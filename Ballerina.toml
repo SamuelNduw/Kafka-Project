@@ -1,8 +1,8 @@
 [package]
-org = "samue"
-name = "Logistics_Service"
+org = "owner"
+name = "kafka_assignment"
 version = "0.1.0"
-distribution = "2201.9.2"
+distribution = "2201.10.0"
 
 [build-options]
 observabilityIncluded = true
