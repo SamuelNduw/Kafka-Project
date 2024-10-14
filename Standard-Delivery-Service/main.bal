@@ -11,7 +11,7 @@ mysql:Client dbClient = check new (
     port = 3306,
     database = "logisticsDB",
     user = "root",
-    password = ""
+    password = "password123"
 );
 
 
