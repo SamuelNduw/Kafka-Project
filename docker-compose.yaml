@@ -9,7 +9,11 @@ services:
       - "8080:8080"  # Expose logistics service on port 8080
     environment:
       - KAFKA_BROKER_URL=kafka:9092
-      - MONGODB_URI=mongodb://mongodb:27017/logistics
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=logisticsDB
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password123
     depends_on:
       - kafka
       - mysql
