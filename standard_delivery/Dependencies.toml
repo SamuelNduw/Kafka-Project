@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.9.2"
+distribution-version = "2201.10.1"
 
 [[package]]
 org = "ballerina"
@@ -23,6 +23,9 @@ version = "1.6.1"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.value"}
+]
+modules = [
+	{org = "ballerina", packageName = "io", moduleName = "io"}
 ]
 
 [[package]]
@@ -64,22 +67,8 @@ dependencies = [
 
 [[package]]
 org = "ballerina"
-name = "log"
-version = "2.9.0"
-dependencies = [
-	{org = "ballerina", name = "io"},
-	{org = "ballerina", name = "jballerina.java"},
-	{org = "ballerina", name = "lang.value"},
-	{org = "ballerina", name = "observe"}
-]
-modules = [
-	{org = "ballerina", packageName = "log", moduleName = "log"}
-]
-
-[[package]]
-org = "ballerina"
 name = "observe"
-version = "1.2.3"
+version = "1.3.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
@@ -87,7 +76,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "time"
-version = "2.5.0"
+version = "2.4.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
@@ -118,7 +107,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "kafka"
-version = "4.1.0"
+version = "4.2.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "jballerina.java"},
@@ -130,15 +119,15 @@ modules = [
 ]
 
 [[package]]
-org = "samue"
-name = "Logistics_Service"
+org = "dell"
+name = "standard_delivery"
 version = "0.1.0"
 dependencies = [
-	{org = "ballerina", name = "log"},
+	{org = "ballerina", name = "io"},
 	{org = "ballerinai", name = "observe"},
 	{org = "ballerinax", name = "kafka"}
 ]
 modules = [
-	{org = "samue", packageName = "Logistics_Service", moduleName = "Logistics_Service"}
+	{org = "dell", packageName = "standard_delivery", moduleName = "standard_delivery"}
 ]
 

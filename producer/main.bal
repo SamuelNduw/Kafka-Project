@@ -1,87 +1,41 @@
-import ballerina/log;
+import ballerina/io;
+//import ballerina/log;
 import ballerinax/kafka;
 
-type ShipmentRequest record {
-    string request_id;
-    CustomerInfo customer_info;
-    ShipmentDetails shipment_details;
+// Define a Request type to hold information about a delivery request
+type Shipment record {
+    string shipmentType; // Type of shipment (standard, express, international)
+    string pickupLocation; // Pickup location for the package
+    string deliveryLocation; // Delivery location for the package
+    string preferredTime; // Preferred pickup or delivery time
+    string customerFirstName; // Customer's first name
+    string customerLastName; // Customer's last name
+    string customerContact; // Customer's contact number
 };
 
-type CustomerInfo record {
-    string first_name;
-    string last_name;
-    string contact_number;
-};
+const string KAFKA_BROKER_URL = "localhost:9092";
 
-type ShipmentDetails record {
-    string pickup_location;
-    string delivery_location;
-    string preferred_time_slot;
-    string shipment_type;  // standard, express, international
-};
-
-type ShipmentResponse record {
-    string request_id;
-    string pickup_time;
-    string delivery_time;
-    string tracking_number;
-    string status;
-    string message;
-};
-
-kafka:ProducerConfiguration producerConfiguration = {
-    clientId: "basic-producer",
-    acks: "all",
-    retryCount: 3
-};
-
-kafka:Producer prod = check new (kafka:DEFAULT_URL, producerConfiguration);
-
-
-function sendShipmentRequestToKafka(ShipmentRequest shipmentRequest) returns error? {
-    // Convert the shipment request to a JSON string
-    json shipmentJson = shipmentRequest.toJsonString();
-
-    // Send the shipment request to the "logistics-requests" Kafka topic
-    check prod->send({
-        topic: "logistics_requests",
-        value: shipmentJson.toString()
-    });
-
-    log:printInfo("Shipment request sent to logistics service: " + shipmentRequest.toString());
-}
+// Main function to simulate a producer sending a request
 public function main() returns error? {
+    kafka:Producer prod = check new (KAFKA_BROKER_URL);
 
-    ShipmentRequest testRequest = {
-        request_id: "REQ12345",
-        customer_info: {
-            first_name: "John",
-            last_name: "Doe",
-            contact_number: "1234567890"
-        },
-        shipment_details: {
-            pickup_location: "Location A", 
-            delivery_location: "Location B", 
-            preferred_time_slot: "2024-10-13 10:00:00", 
-            shipment_type: "standard"
-        }
+    // Creating a dummy shipment request to simulate sending a message
+    Shipment msg = {
+        shipmentType: "express",  // Change this to simulate different shipment types
+        pickupLocation: "123 Pickup St.",
+        deliveryLocation: "456 Delivery Ave.",
+        preferredTime: "2024-10-15 10:00 AM",
+        customerFirstName: "John",
+        customerLastName: "Doe",
+        customerContact: "123-456-7890"
     };
 
-    checkpanic sendShipmentRequestToKafka(testRequest);
-
+    // Send the request to the Kafka topic "logistics_request"
+    check prod->send({topic: "logistics_requests", value: msg});
+    io:println("Request sent to Kafka topic 'logistics_requests'.");
 }
 
-kafka:ConsumerConfiguration responseConsumer = {
-    groupId: "response-consumer",
-    topics: ["standard_delivery_responses", "express_delivery_responses", "international_delivery_responses"]
-};
-service on new kafka:Listener(kafka:DEFAULT_URL, responseConsumer) {
-    remote function onConsumerRecord(kafka:BytesConsumerRecord[] records) returns error? {
-        foreach var consumerRecord in records {
-            byte[] messageContent = consumerRecord.value;
-            string messageStr = check string:fromBytes(messageContent);
-            ShipmentResponse shipmentResponse = check messageStr.fromJsonStringWithType();
-            log:printInfo("Received shipment response: " + shipmentResponse.toString());
-        }
-    }
-}
+// Kafka Producer clients for each delivery service
+kafka:Producer standardProducer = check new (KAFKA_BROKER_URL);
+kafka:Producer expressProducer = check new (KAFKA_BROKER_URL);
+kafka:Producer internationalProducer = check new (KAFKA_BROKER_URL);
